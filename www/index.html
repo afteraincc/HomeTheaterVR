@@ -1,0 +1,66 @@
+<html>
+
+<head>
+	<script src="aframe-v1.4.1.min.js"></script>
+	<script src="flv-v1.6.2.min.js"></script>
+	<!--<script src="aframe-inspector.min.js"></script>-->
+</head>
+
+<body>
+	<script>
+		AFRAME.registerComponent('flvjs', {
+			init: function () {
+				var el = this.el;
+				let vid = document.querySelector(el.getAttribute('src'));
+				var scene = document.querySelector("a-scene");
+
+				if (flvjs.isSupported()) {
+					var flvPlayer = flvjs.createPlayer({
+						type: 'flv',
+						isLive: true,
+						url: '/vr/hometheater.flv'
+					}, {
+						enableStashBuffer: false,
+						stashInitialSize: 128
+					});
+					flvPlayer.attachMediaElement(vid);
+					scene.flvPlayer = flvPlayer;
+				}
+			}
+		});
+	</script>
+	<a-scene stats>
+		<a-assets>
+			<video id="hometheater" preload="auto"></video>
+			<img id="sky" src="sky.png">
+		</a-assets>
+
+		<a-camera>
+			<a-video src="#hometheater" width="4" height="2.25" position="0 0 -3" flvjs="#hometheater"></a-video>
+			<!--lamp
+			<a-entity gltf-model="lamp.gltf" scale="0.00012 0.00012 0.00012" position="-2.6 -1.2 -2.8"
+				rotation="0 90 0"></a-entity>
+			<a-light type="spot" color="#FF8000" angle="90" position="-2.3 0.80 -2.50"></a-light>
+			-->
+		</a-camera>
+
+		<a-sky src="#sky"></a-sky>
+		<a-entity gltf-model="space.gltf"></a-entity>
+		<!--
+		<a-entity gltf-model="horse.gltf" scale="0.015 0.012 0.012" position="0 0.20 -4.5"></a-entity>
+		-->
+	</a-scene>
+	<script>
+		var scene = document.querySelector("a-scene");
+		scene.addEventListener("loaded", playvideo);
+
+		function playvideo() {
+			scene.querySelector(".a-enter-vr-button").addEventListener("click", function (e) {
+				scene.flvPlayer.load();
+				scene.flvPlayer.play();
+			}, false);
+		}
+	</script>
+</body>
+
+</html>
